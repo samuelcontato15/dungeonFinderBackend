@@ -1,7 +1,9 @@
 package com.pi4.dungeonFinderBackend.services;
 
 import com.pi4.dungeonFinderBackend.datasource.repositories.JogoRepository;
+import com.pi4.dungeonFinderBackend.datasource.repositories.UsuarioRepository;
 import com.pi4.dungeonFinderBackend.domain.entities.Jogo;
+import com.pi4.dungeonFinderBackend.domain.entities.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.UUID;
 public class JogoService {
 
     private final JogoRepository jogoRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public List<Jogo> listarTodos() {
         return jogoRepository.findAll();
@@ -26,7 +29,9 @@ public class JogoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jogo não encontrado"));
     }
 
-    public Jogo criar(Jogo jogo) {
+    public Jogo criar(Jogo jogo, UUID usuarioId) {
+        verificarAdmin(usuarioId);
+
         if (jogoRepository.existsByNome(jogo.getNome()))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Nome já cadastrado");
 
@@ -37,9 +42,10 @@ public class JogoService {
         return jogoRepository.save(jogo);
     }
 
-    public Jogo atualizar(UUID id, Jogo dadosNovos) {
-        Jogo jogo = buscarPorId(id);
+    public Jogo atualizar(UUID id, Jogo dadosNovos, UUID usuarioId) {
+        verificarAdmin(usuarioId);
 
+        Jogo jogo = buscarPorId(id);
         jogo.setNome(dadosNovos.getNome());
         jogo.setSlug(dadosNovos.getSlug());
         jogo.setCapa(dadosNovos.getCapa());
@@ -47,8 +53,17 @@ public class JogoService {
         return jogoRepository.save(jogo);
     }
 
-    public void deletar(UUID id) {
+    public void deletar(UUID id, UUID usuarioId) {
+        verificarAdmin(usuarioId);
         buscarPorId(id);
         jogoRepository.deleteById(id);
+    }
+
+    private void verificarAdmin(UUID usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        if (!usuario.getIsAdmin())
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
     }
 }

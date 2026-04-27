@@ -28,18 +28,25 @@ public class JogoController {
     }
 
     @PostMapping
-    public ResponseEntity<Jogo> criar(@RequestBody Jogo jogo) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(jogoService.criar(jogo));
+    public ResponseEntity<Jogo> criar(
+            @RequestBody Jogo jogo,
+            @RequestHeader("X-Usuario-Id") UUID usuarioId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(jogoService.criar(jogo, usuarioId));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Jogo> atualizar(@PathVariable UUID id, @RequestBody Jogo jogo) {
-        return ResponseEntity.ok(jogoService.atualizar(id, jogo));
+    public ResponseEntity<Jogo> atualizar(
+            @PathVariable UUID id,
+            @RequestBody Jogo jogo,
+            @RequestHeader("X-Usuario-Id") UUID usuarioId) {
+        return ResponseEntity.ok(jogoService.atualizar(id, jogo, usuarioId));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
-        jogoService.deletar(id);
+    public ResponseEntity<Void> deletar(
+            @PathVariable UUID id,
+            @RequestHeader("X-Usuario-Id") UUID usuarioId) {
+        jogoService.deletar(id, usuarioId);
         return ResponseEntity.noContent().build();
     }
 }

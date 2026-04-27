@@ -44,9 +44,6 @@ public class Raid {
     @Column(name = "INICIO_EM", nullable = false)
     private LocalDateTime inicioEm;
 
-    @Column(name = "FIM_EM", nullable = false)
-    private LocalDateTime fimEm;
-
     @Column(name = "CRIADO_EM", nullable = false)
     private LocalDateTime criadoEm;
 
