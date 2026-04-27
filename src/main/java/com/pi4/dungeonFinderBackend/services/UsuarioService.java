@@ -31,7 +31,7 @@ public class UsuarioService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
 
         if (usuarioRepository.existsByNick(usuario.getNick()))
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Nick já cadastrado");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Nickname já cadastrado");
 
         usuario.setCriadoEm(LocalDateTime.now());
         usuario.setIsAdmin(false);

@@ -22,18 +22,11 @@ public class Raid {
     @JoinColumn(name = "JOGO_ID", nullable = false)
     private Jogo jogo;
 
-    @ManyToOne
-    @JoinColumn(name = "GUILDA_ID", nullable = false)
-    private Guilda guilda;
-
     @Column(name = "NOME", nullable = false)
     private String nome;
 
     @Column(name = "DESCRICAO", columnDefinition = "TEXT")
     private String descricao;
-
-    @Column(name = "BANNER", columnDefinition = "TEXT")
-    private String banner;
 
     @Column(name = "MIN_JOGADORES", nullable = false)
     private Integer minJogadores;
