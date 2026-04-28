@@ -22,6 +22,10 @@ public class Raid {
     @JoinColumn(name = "JOGO_ID", nullable = false)
     private Jogo jogo;
 
+    @ManyToOne
+    @JoinColumn(name = "CRIADO_POR_ID", nullable = false)
+    private Usuario criadoPor;
+
     @Column(name = "NOME", nullable = false)
     private String nome;
 

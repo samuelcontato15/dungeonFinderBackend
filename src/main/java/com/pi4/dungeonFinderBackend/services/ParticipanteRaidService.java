@@ -1,0 +1,63 @@
+package com.pi4.dungeonFinderBackend.services;
+
+import com.pi4.dungeonFinderBackend.datasource.repositories.ParticipanteRaidRepository;
+import com.pi4.dungeonFinderBackend.datasource.repositories.RaidRepository;
+import com.pi4.dungeonFinderBackend.datasource.repositories.UsuarioRepository;
+import com.pi4.dungeonFinderBackend.domain.entities.ParticipanteRaid;
+import com.pi4.dungeonFinderBackend.domain.entities.Raid;
+import com.pi4.dungeonFinderBackend.domain.entities.Usuario;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class ParticipanteRaidService {
+
+    private final ParticipanteRaidRepository participanteRaidRepository;
+    private final RaidRepository raidRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    public List<ParticipanteRaid> listarPorRaid(UUID raidId) {
+        return participanteRaidRepository.findByRaidId(raidId);
+    }
+
+    public ParticipanteRaid inscrever(UUID raidId, UUID usuarioId) {
+        if (participanteRaidRepository.existsByRaidIdAndUsuarioId(raidId, usuarioId))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Usuário já inscrito nesta raid");
+
+        Raid raid = raidRepository.findById(raidId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Raid não encontrada"));
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        ParticipanteRaid.ParticipanteRaidId id = new ParticipanteRaid.ParticipanteRaidId();
+        id.setRaidId(raidId);
+        id.setUsuarioId(usuarioId);
+
+        ParticipanteRaid participante = new ParticipanteRaid();
+        participante.setId(id);
+        participante.setRaid(raid);
+        participante.setUsuario(usuario);
+        participante.setInscritoEm(LocalDateTime.now());
+
+        return participanteRaidRepository.save(participante);
+    }
+
+    public void sair(UUID raidId, UUID usuarioId) {
+        ParticipanteRaid.ParticipanteRaidId id = new ParticipanteRaid.ParticipanteRaidId();
+        id.setRaidId(raidId);
+        id.setUsuarioId(usuarioId);
+
+        if (!participanteRaidRepository.existsById(id))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não está inscrito nesta raid");
+
+        participanteRaidRepository.deleteById(id);
+    }
+}
