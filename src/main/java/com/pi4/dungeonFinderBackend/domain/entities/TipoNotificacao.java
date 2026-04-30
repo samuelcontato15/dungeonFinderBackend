@@ -1,9 +1,10 @@
 package com.pi4.dungeonFinderBackend.domain.entities;
 
 public enum TipoNotificacao {
+    NOVO_EVENTO,
+    BUILD_PUBLICA,
+    NOVA_RAID,
+    NOVO_PARTICIPANTE_RAID,
     SOLICITACAO_AMIZADE,
-    AMIZADE_ACEITA,
-    CONVITE_GUILDA,
-    NOVO_COMENTARIO,
-    NOVO_LIKE
+    AMIGO_ENTROU_GUILDA
 }
