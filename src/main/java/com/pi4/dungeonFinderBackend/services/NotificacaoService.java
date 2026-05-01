@@ -1,7 +1,10 @@
 package com.pi4.dungeonFinderBackend.services;
 
-import com.pi4.dungeonFinderBackend.datasource.repositories.*;
-import com.pi4.dungeonFinderBackend.domain.entities.*;
+import com.pi4.dungeonFinderBackend.datasource.repositories.NotificacaoRepository;
+import com.pi4.dungeonFinderBackend.datasource.repositories.UsuarioRepository;
+import com.pi4.dungeonFinderBackend.domain.entities.Notificacao;
+import com.pi4.dungeonFinderBackend.domain.entities.TipoNotificacao;
+import com.pi4.dungeonFinderBackend.domain.entities.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,10 +20,6 @@ public class NotificacaoService {
 
     private final NotificacaoRepository notificacaoRepository;
     private final UsuarioRepository usuarioRepository;
-    private final AmizadeRepository amizadeRepository;
-    private final MembroGuildaRepository membroGuildaRepository;
-
-
 
     public List<Notificacao> listarPorUsuario(UUID usuarioId) {
         return notificacaoRepository.findByUsuarioIdOrderByCriadoEmDesc(usuarioId);
@@ -31,103 +30,20 @@ public class NotificacaoService {
     }
 
     public Notificacao marcarComoLida(UUID notificacaoId, UUID usuarioId) {
-        Notificacao notificacao = notificacaoRepository.findById(notificacaoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notificação não encontrada"));
-
-        if (!notificacao.getUsuario().getId().equals(usuarioId))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
-
+        Notificacao notificacao = buscarPorId(notificacaoId, usuarioId);
         notificacao.setLida(true);
         return notificacaoRepository.save(notificacao);
     }
 
     public void deletar(UUID notificacaoId, UUID usuarioId) {
-        Notificacao notificacao = notificacaoRepository.findById(notificacaoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notificação não encontrada"));
-
-        if (!notificacao.getUsuario().getId().equals(usuarioId))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
-
+        buscarPorId(notificacaoId, usuarioId);
         notificacaoRepository.deleteById(notificacaoId);
     }
 
+    public void criar(UUID usuarioId, TipoNotificacao tipo, String mensagem, UUID referenciaId, String referenciaTipo) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-    public void notificarNovoEvento(Evento evento, List<Usuario> usuarios) {
-        for (Usuario usuario : usuarios) {
-            criar(usuario, TipoNotificacao.NOVO_EVENTO,
-                    "Novo evento em " + evento.getJogo().getNome() + ": " + evento.getNome(),
-                    evento.getId(), "EVENTO");
-        }
-    }
-
-
-    public void notificarBuildPublica(Build build) {
-        List<Amizade> amizades = amizadeRepository
-                .findBySolicitanteIdOrDestinatarioId(build.getUsuario().getId(), build.getUsuario().getId());
-
-        amizades.stream()
-                .filter(a -> a.getStatus() == StatusAmizade.ACEITO)
-                .forEach(a -> {
-                    Usuario amigo = a.getSolicitante().getId().equals(build.getUsuario().getId())
-                            ? a.getDestinatario()
-                            : a.getSolicitante();
-                    criar(amigo, TipoNotificacao.BUILD_PUBLICA,
-                            build.getUsuario().getNick() + " postou uma nova build: " + build.getTitulo(),
-                            build.getId(), "BUILD");
-                });
-    }
-
-    public void notificarNovaRaid(Raid raid) {
-        List<MembroGuilda> membros = membroGuildaRepository.findByGuildaId(raid.getJogo().getId());
-        for (MembroGuilda membro : membros) {
-            criar(membro.getUsuario(), TipoNotificacao.NOVA_RAID,
-                    "Nova raid criada: " + raid.getNome(),
-                    raid.getId(), "RAID");
-        }
-    }
-
-
-    public void notificarNovoParticipanteRaid(Raid raid, Usuario participante) {
-        criar(raid.getCriadoPor(), TipoNotificacao.NOVO_PARTICIPANTE_RAID,
-                participante.getNick() + " entrou na sua raid: " + raid.getNome(),
-                raid.getId(), "RAID");
-    }
-
-
-    public void notificarSolicitacaoAmizade(Amizade amizade) {
-        criar(amizade.getDestinatario(), TipoNotificacao.SOLICITACAO_AMIZADE,
-                amizade.getSolicitante().getNick() + " te enviou uma solicitação de amizade",
-                amizade.getId(), "AMIZADE");
-    }
-
-
-    public void notificarAmigoEntrouNaGuilda(MembroGuilda novoMembro) {
-        UUID usuarioId = novoMembro.getUsuario().getId();
-        UUID guildaId = novoMembro.getGuilda().getId();
-
-        List<Amizade> amizades = amizadeRepository
-                .findBySolicitanteIdOrDestinatarioId(usuarioId, usuarioId);
-
-        amizades.stream()
-                .filter(a -> a.getStatus() == StatusAmizade.ACEITO)
-                .forEach(a -> {
-                    Usuario amigo = a.getSolicitante().getId().equals(usuarioId)
-                            ? a.getDestinatario()
-                            : a.getSolicitante();
-
-                    boolean amigoEstaNaGuilda = membroGuildaRepository
-                            .existsByGuildaIdAndUsuarioId(guildaId, amigo.getId());
-
-                    if (amigoEstaNaGuilda)
-                        criar(amigo, TipoNotificacao.AMIGO_ENTROU_GUILDA,
-                                novoMembro.getUsuario().getNick() + " entrou na guilda " + novoMembro.getGuilda().getNome(),
-                                guildaId, "GUILDA");
-                });
-    }
-
-
-
-    private void criar(Usuario usuario, TipoNotificacao tipo, String mensagem, UUID referenciaId, String referenciaTipo) {
         Notificacao notificacao = new Notificacao();
         notificacao.setUsuario(usuario);
         notificacao.setTipo(tipo);
@@ -136,6 +52,17 @@ public class NotificacaoService {
         notificacao.setReferenciaId(referenciaId);
         notificacao.setReferenciaTipo(referenciaTipo);
         notificacao.setCriadoEm(LocalDateTime.now());
+
         notificacaoRepository.save(notificacao);
+    }
+
+    private Notificacao buscarPorId(UUID notificacaoId, UUID usuarioId) {
+        Notificacao notificacao = notificacaoRepository.findById(notificacaoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notificação não encontrada"));
+
+        if (!notificacao.getUsuario().getId().equals(usuarioId))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
+
+        return notificacao;
     }
 }
