@@ -5,36 +5,38 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+
 import javax.crypto.SecretKey;
 import java.util.Date;
 
-
+@Component
 public class JwtUtils {
-    private String SECRET = "Chaveapidungeonfinder";
+
+    private final String SECRET = "dungeon-finder-chave-secreta-2024";
 
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
     public String generateToken(String email) {
-
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(
                         new Date(System.currentTimeMillis()
-                                + 1000 * 60 * 60 * 24)
+                                + 1000 * 60 * 60 * 24) // 24 horas
                 )
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-
     }
+
     public String getEmailFromToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-                return claims.getSubject();
+        return claims.getSubject();
     }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
