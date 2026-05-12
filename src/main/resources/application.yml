@@ -3,7 +3,7 @@ spring:
     name: DungeonFinder
 
   datasource:
-    url: jdbc:h2:mem:taskManagerDatabase
+    url: jdbc:h2:file:./data/dungeonFinderDB
     driver-class-name: org.h2.Driver
     username: sa
     password: "coxinha123"
@@ -21,7 +21,7 @@ spring:
     init:
       schema-locations: classpath*:schema.sql
       data-locations: classpath*:data.sql
-      mode: always
+      mode: never
 
   h2:
     console:
@@ -33,11 +33,12 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
         jdbc:
           batch_size: 20
         order_inserts: true
