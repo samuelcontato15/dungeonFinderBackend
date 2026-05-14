@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/**",
                                 "/console/**"
+
                         ).permitAll()
 
                         .anyRequest().authenticated()

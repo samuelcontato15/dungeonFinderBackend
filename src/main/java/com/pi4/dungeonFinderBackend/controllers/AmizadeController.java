@@ -45,4 +45,13 @@ public class AmizadeController {
         amizadeService.deletar(amizadeId, usuarioId);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/{amizadeId}/aceitar")
+    public ResponseEntity<Amizade> aceitar(
+            @PathVariable UUID amizadeId,
+            @RequestParam UUID usuarioId
+    ) {
+        return ResponseEntity.ok(
+                amizadeService.aceitar(amizadeId, usuarioId)
+        );
+    }
 }

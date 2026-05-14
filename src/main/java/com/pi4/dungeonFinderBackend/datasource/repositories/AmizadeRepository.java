@@ -23,4 +23,8 @@ public interface AmizadeRepository extends JpaRepository<Amizade, UUID> {
     );
 
     List<Amizade> findBySolicitanteIdOrDestinatarioId(UUID usuarioId, UUID usuarioId1);
+    List<Amizade> findByStatusAndDestinatarioId(
+            StatusAmizade status,
+            UUID destinatarioId
+    );
 }

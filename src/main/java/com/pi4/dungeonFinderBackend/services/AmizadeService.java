@@ -27,9 +27,11 @@ public class AmizadeService {
     }
 
     public List<Amizade> listarPendentes(UUID usuarioId) {
-        return amizadeRepository.findByStatusAndSolicitanteIdOrStatusAndDestinatarioId(StatusAmizade.PENDENTE, usuarioId, StatusAmizade.PENDENTE, usuarioId);
+        return amizadeRepository.findByStatusAndDestinatarioId(
+                StatusAmizade.PENDENTE,
+                usuarioId
+        );
     }
-
     public Amizade solicitar(UUID solicitanteId, UUID destinatarioId) {
 
         if (solicitanteId.equals(destinatarioId)) {
@@ -55,6 +57,17 @@ public class AmizadeService {
         amizade.setStatus(StatusAmizade.PENDENTE);
         amizade.setCriadoEm(LocalDateTime.now());
 
+        return amizadeRepository.save(amizade);
+    }
+    public Amizade aceitar(UUID amizadeId, UUID destinatarioId) {
+        Amizade amizade = amizadeRepository.findById(amizadeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!amizade.getDestinatario().getId().equals(destinatarioId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        amizade.setStatus(StatusAmizade.ACEITO);
         return amizadeRepository.save(amizade);
     }
 
