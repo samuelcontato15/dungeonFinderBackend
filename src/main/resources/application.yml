@@ -1,0 +1,123 @@
+spring:
+  application:
+    name: DungeonFinder
+
+  datasource:
+    url: jdbc:h2:file:./data/dungeonFinderDB
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: "coxinha123"
+    hikari:
+      pool-name: taskManagerHikariCP
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-timeout: 20000
+      leak-detection-threshold: 2000
+      auto-commit: false
+
+  sql:
+    init:
+      schema-locations: classpath*:schema.sql
+      data-locations: classpath*:data.sql
+      mode: never
+
+  h2:
+    console:
+      enabled: true
+      path: /console
+      settings:
+        trace: true
+        web-allow-others: true
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+#        cache:
+#          use_second_level_cache: true
+#          use_query_cache: true
+#          region:
+#            factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+#        javax:
+#          cache:
+#            provider: org.ehcache.jsr107.EhcacheCachingProvider
+#            uri: classpath:ehcache.xml
+#
+#  cache:
+#    type: jcache
+
+  main:
+    banner-mode: console
+
+  mvc:
+    servlet:
+      load-on-startup: 1
+    format:
+      date: yyyy-MM-dd
+      date-time: yyyy-MM-dd HH:mm:ss
+
+logging:
+  level:
+    root: INFO
+    com.dispositivosmoveis.TaskManager: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.jdbc.core: TRACE
+    org.springframework.transaction: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+  file:
+    name: application.log
+    path: logs
+
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    tagsSorter: alpha
+    operationsSorter: alpha
+    display-request-duration: true
+    filter: true
+    enabled: true
+  version: 1.0.0
+  info:
+    title: Product Management API
+    description: API for managing products with CRUD operations
+    version: 1.0.0
+    contact:
+      name: API Support
+      email: teste@gmail.com
+    license:
+      name: Apache 2.0
+      url: https://www.apache.org/licenses/LICENSE-2.0
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  error:
+    include-message: always
+    include-stacktrace: on_param
+  compression:
+    enabled: true
+    mime-types: >
+      text/html,
+      text/xml,
+      text/plain,
+      text/css,
+      text/javascript,
+      application/javascript,
+      application/json
+    min-response-size: 1024
