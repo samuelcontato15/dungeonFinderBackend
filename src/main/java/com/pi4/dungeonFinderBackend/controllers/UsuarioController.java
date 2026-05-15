@@ -36,7 +36,7 @@ public class UsuarioController {
     public ResponseEntity<Usuario> atualizar(@PathVariable UUID id, @RequestBody Usuario usuario) {
         return ResponseEntity.ok(usuarioService.atualizar(id, usuario));
     }
-<<<<<<< HEAD
+
     @PutMapping("/{id}/admin")
     public ResponseEntity<Usuario> tornarAdmin(@PathVariable UUID id) {
 
@@ -44,9 +44,8 @@ public class UsuarioController {
 
         return ResponseEntity.ok(usuario);
     }
-=======
 
->>>>>>> 2737d8e0d22daeca6d8d709ce8f414f0ee82195c
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         usuarioService.deletar(id);
