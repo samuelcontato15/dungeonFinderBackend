@@ -52,6 +52,7 @@ public class UsuarioService {
         buscarPorId(id);
         usuarioRepository.deleteById(id);
     }
+<<<<<<< HEAD
     public Usuario tornarAdmin(UUID id) {
 
         Usuario usuario = buscarPorId(id);
@@ -61,3 +62,6 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 }
+=======
+}
+>>>>>>> 2737d8e0d22daeca6d8d709ce8f414f0ee82195c

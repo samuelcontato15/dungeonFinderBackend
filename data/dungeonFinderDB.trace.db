@@ -14,6 +14,7 @@ org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\00
         usuario_id uuid not null,
         primary key (id)
     ) [42001-232]
+<<<<<<< HEAD
 2026-05-14 19:52:57.115199-03:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table build (\000d\000a        id uuid not null,\000d\000a        classe varchar(255) not null,\000d\000a        conteudo TEXT,\000d\000a        criado_em timestamp(6) not null,\000d\000a        descricao TEXT,\000d\000a        funcao enum ([*]) not null,\000d\000a        publica boolean not null,\000d\000a        titulo varchar(255) not null,\000d\000a        jogo_id uuid not null,\000d\000a        usuario_id uuid not null,\000d\000a        primary key (id)\000d\000a    )"; expected "INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
 
@@ -62,3 +63,5 @@ org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\00
         usuario_id uuid not null,
         primary key (id)
     ) [42001-232]
+=======
+>>>>>>> 2737d8e0d22daeca6d8d709ce8f414f0ee82195c
