@@ -1404,3 +1404,35 @@ org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\00
         usuario_id uuid not null,
         primary key (id)
     ) [42001-232]
+2026-05-16 13:30:29.906309-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table build (\000d\000a        id uuid not null,\000d\000a        classe varchar(255) not null,\000d\000a        conteudo TEXT,\000d\000a        criado_em timestamp(6) not null,\000d\000a        descricao TEXT,\000d\000a        funcao enum ([*]) not null,\000d\000a        publica boolean not null,\000d\000a        titulo varchar(255) not null,\000d\000a        jogo_id uuid not null,\000d\000a        usuario_id uuid not null,\000d\000a        primary key (id)\000d\000a    )"; expected "INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+
+    create table build (
+        id uuid not null,
+        classe varchar(255) not null,
+        conteudo TEXT,
+        criado_em timestamp(6) not null,
+        descricao TEXT,
+        funcao enum () not null,
+        publica boolean not null,
+        titulo varchar(255) not null,
+        jogo_id uuid not null,
+        usuario_id uuid not null,
+        primary key (id)
+    ) [42001-232]
+2026-05-16 13:54:00.941103-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table build (\000d\000a        id uuid not null,\000d\000a        classe varchar(255) not null,\000d\000a        conteudo TEXT,\000d\000a        criado_em timestamp(6) not null,\000d\000a        descricao TEXT,\000d\000a        funcao enum ([*]) not null,\000d\000a        publica boolean not null,\000d\000a        titulo varchar(255) not null,\000d\000a        jogo_id uuid not null,\000d\000a        usuario_id uuid not null,\000d\000a        primary key (id)\000d\000a    )"; expected "INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+
+    create table build (
+        id uuid not null,
+        classe varchar(255) not null,
+        conteudo TEXT,
+        criado_em timestamp(6) not null,
+        descricao TEXT,
+        funcao enum () not null,
+        publica boolean not null,
+        titulo varchar(255) not null,
+        jogo_id uuid not null,
+        usuario_id uuid not null,
+        primary key (id)
+    ) [42001-232]

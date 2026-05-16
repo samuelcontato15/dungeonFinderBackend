@@ -2,6 +2,11 @@ spring:
   application:
     name: DungeonFinder
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   datasource:
     url: jdbc:h2:file:./data/dungeonFinderDB
     driver-class-name: org.h2.Driver
