@@ -42,7 +42,13 @@ public class UsuarioService {
         Usuario usuario = buscarPorId(id);
 
         usuario.setNick(dadosNovos.getNick());
-        usuario.setFotoPerfil(dadosNovos.getFotoPerfil());
+        usuario.setEmail(dadosNovos.getEmail());
+        if (dadosNovos.getSenhaHash() != null && !dadosNovos.getSenhaHash().isBlank()) {
+            usuario.setSenhaHash(dadosNovos.getSenhaHash());
+        }
+        if (dadosNovos.getFotoPerfil() != null) {
+            usuario.setFotoPerfil(dadosNovos.getFotoPerfil());
+        }
         usuario.setBio(dadosNovos.getBio());
 
         return usuarioRepository.save(usuario);
