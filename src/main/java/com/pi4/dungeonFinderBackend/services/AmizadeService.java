@@ -4,6 +4,7 @@ import com.pi4.dungeonFinderBackend.datasource.repositories.AmizadeRepository;
 import com.pi4.dungeonFinderBackend.datasource.repositories.UsuarioRepository;
 import com.pi4.dungeonFinderBackend.domain.entities.Amizade;
 import com.pi4.dungeonFinderBackend.domain.entities.StatusAmizade;
+import com.pi4.dungeonFinderBackend.domain.entities.TipoNotificacao;
 import com.pi4.dungeonFinderBackend.domain.entities.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ public class AmizadeService {
 
     private final AmizadeRepository amizadeRepository;
     private final UsuarioRepository usuarioRepository;
+    private final NotificacaoService notificacaoService;
 
     public List<Amizade> listarAmizades(UUID usuarioId) {
         return amizadeRepository
@@ -27,23 +29,19 @@ public class AmizadeService {
     }
 
     public List<Amizade> listarPendentes(UUID usuarioId) {
-        return amizadeRepository.findByStatusAndDestinatarioId(
-                StatusAmizade.PENDENTE,
-                usuarioId
-        );
+        return amizadeRepository.findByStatusAndDestinatarioId(StatusAmizade.PENDENTE, usuarioId);
     }
-    public Amizade solicitar(UUID solicitanteId, UUID destinatarioId) {
 
-        if (solicitanteId.equals(destinatarioId)) {
+    public Amizade solicitar(UUID solicitanteId, UUID destinatarioId) {
+        if (solicitanteId.equals(destinatarioId))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
 
         boolean existe = amizadeRepository
-                .existsBySolicitanteIdAndDestinatarioIdOrSolicitanteIdAndDestinatarioId(solicitanteId, destinatarioId, destinatarioId, solicitanteId);
+                .existsBySolicitanteIdAndDestinatarioIdOrSolicitanteIdAndDestinatarioId(
+                        solicitanteId, destinatarioId, destinatarioId, solicitanteId);
 
-        if (existe) {
+        if (existe)
             throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
 
         Usuario solicitante = usuarioRepository.findById(solicitanteId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -57,29 +55,49 @@ public class AmizadeService {
         amizade.setStatus(StatusAmizade.PENDENTE);
         amizade.setCriadoEm(LocalDateTime.now());
 
-        return amizadeRepository.save(amizade);
+        Amizade salva = amizadeRepository.save(amizade);
+
+        notificacaoService.criar(
+                destinatario.getId(),
+                TipoNotificacao.SOLICITACAO_AMIZADE,
+                solicitante.getNick() + " enviou uma solicitação de amizade",
+                salva.getId(),
+                "AMIZADE"
+        );
+
+        return salva;
     }
-    public Amizade aceitar(UUID amizadeId, UUID destinatarioId) {
+
+    public Amizade responder(UUID amizadeId, StatusAmizade status, UUID usuarioId) {
         Amizade amizade = amizadeRepository.findById(amizadeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (!amizade.getDestinatario().getId().equals(destinatarioId)) {
+        if (!amizade.getDestinatario().getId().equals(usuarioId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        amizade.setStatus(status);
+        Amizade salva = amizadeRepository.save(amizade);
+
+        if (status == StatusAmizade.ACEITO) {
+            notificacaoService.criar(
+                    amizade.getSolicitante().getId(),
+                    TipoNotificacao.SOLICITACAO_AMIZADE,
+                    amizade.getDestinatario().getNick() + " aceitou sua solicitação de amizade",
+                    salva.getId(),
+                    "AMIZADE"
+            );
         }
 
-        amizade.setStatus(StatusAmizade.ACEITO);
-        return amizadeRepository.save(amizade);
+        return salva;
     }
 
     public void deletar(UUID amizadeId, UUID usuarioId) {
-
         Amizade amizade = amizadeRepository.findById(amizadeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (!amizade.getSolicitante().getId().equals(usuarioId)
-                && !amizade.getDestinatario().getId().equals(usuarioId)) {
+                && !amizade.getDestinatario().getId().equals(usuarioId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
 
         amizadeRepository.delete(amizade);
     }

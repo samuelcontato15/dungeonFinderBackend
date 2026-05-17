@@ -1,6 +1,7 @@
 package com.pi4.dungeonFinderBackend.controllers;
 
 import com.pi4.dungeonFinderBackend.domain.entities.Amizade;
+import com.pi4.dungeonFinderBackend.domain.entities.StatusAmizade;
 import com.pi4.dungeonFinderBackend.services.AmizadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -45,13 +46,12 @@ public class AmizadeController {
         amizadeService.deletar(amizadeId, usuarioId);
         return ResponseEntity.noContent().build();
     }
-    @PutMapping("/{amizadeId}/aceitar")
-    public ResponseEntity<Amizade> aceitar(
+    @PutMapping("/{amizadeId}/responder")
+    public ResponseEntity<Amizade> responder(
             @PathVariable UUID amizadeId,
-            @RequestParam UUID usuarioId
+            @RequestParam StatusAmizade status,
+            @RequestHeader("X-Usuario-Id") UUID usuarioId
     ) {
-        return ResponseEntity.ok(
-                amizadeService.aceitar(amizadeId, usuarioId)
-        );
+        return ResponseEntity.ok(amizadeService.responder(amizadeId, status, usuarioId));
     }
 }

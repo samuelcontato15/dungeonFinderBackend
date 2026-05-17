@@ -26,7 +26,7 @@ public class NotificacaoController {
         return ResponseEntity.ok(notificacaoService.listarNaoLidas(usuarioId));
     }
 
-    @PatchMapping("/{id}/lida")
+    @PutMapping("/{id}/lida")
     public ResponseEntity<Notificacao> marcarComoLida(
             @PathVariable UUID id,
             @RequestHeader("X-Usuario-Id") UUID usuarioId) {
