@@ -101,4 +101,10 @@ public class AmizadeService {
 
         amizadeRepository.delete(amizade);
     }
+
+    public Amizade buscarPorId(UUID id) {
+        return amizadeRepository.findByIdWithUsuarios(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Amizade não encontrada"));
+    }
 }
+
