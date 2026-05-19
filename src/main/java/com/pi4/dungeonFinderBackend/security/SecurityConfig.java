@@ -40,8 +40,8 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/auth/**",
-                                "/console/**"
-
+                                "/console/**",
+                                "/jogos/**"
                         ).permitAll()
 
                         .anyRequest().authenticated()
