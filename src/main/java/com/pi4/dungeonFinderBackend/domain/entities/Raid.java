@@ -44,4 +44,6 @@ public class Raid {
     @Column(name = "CRIADO_EM", nullable = false)
     private LocalDateTime criadoEm;
 
+    @Column(name = "NOTIFICACAO_ENVIADA")
+    private Boolean notificacaoEnviada = false;
 }

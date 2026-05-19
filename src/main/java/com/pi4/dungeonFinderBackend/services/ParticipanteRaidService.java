@@ -5,6 +5,7 @@ import com.pi4.dungeonFinderBackend.datasource.repositories.RaidRepository;
 import com.pi4.dungeonFinderBackend.datasource.repositories.UsuarioRepository;
 import com.pi4.dungeonFinderBackend.domain.entities.ParticipanteRaid;
 import com.pi4.dungeonFinderBackend.domain.entities.Raid;
+import com.pi4.dungeonFinderBackend.domain.entities.TipoNotificacao;
 import com.pi4.dungeonFinderBackend.domain.entities.Usuario;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ParticipanteRaidService {
 
+    private final NotificacaoService notificacaoService;
     private final ParticipanteRaidRepository participanteRaidRepository;
     private final RaidRepository raidRepository;
     private final UsuarioRepository usuarioRepository;
@@ -76,6 +78,17 @@ public class ParticipanteRaidService {
         participante.setInscritoEm(LocalDateTime.now());
 
         ParticipanteRaid salvo = participanteRaidRepository.save(participante);
+
+        if (!raid.getCriadoPor().getId().equals(usuarioId)) {
+
+            notificacaoService.criar(
+                    raid.getCriadoPor().getId(),
+                    TipoNotificacao.NOVO_PARTICIPANTE_RAID,
+                    usuario.getNick() + " entrou na sua raid: " + raid.getNome(),
+                    raid.getId(),
+                    "RAID"
+            );
+        }
         System.out.println("Inscrição realizada com sucesso!");
         return salvo;
     }

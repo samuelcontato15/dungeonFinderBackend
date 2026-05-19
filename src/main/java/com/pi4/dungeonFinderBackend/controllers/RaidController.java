@@ -33,6 +33,15 @@ public class RaidController {
     public ResponseEntity<Raid> buscarPorId(@PathVariable UUID id) {
         return ResponseEntity.ok(raidService.buscarPorId(id));
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Raid> editar(
+            @PathVariable UUID id,
+            @RequestBody RaidRequest request,
+            @RequestHeader("X-Usuario-Id") UUID usuarioId) {
+        return ResponseEntity.ok(
+                raidService.editar(id, request, usuarioId)
+        );
+    }
 
     @PostMapping
     public ResponseEntity<Raid> criar(

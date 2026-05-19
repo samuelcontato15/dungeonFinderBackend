@@ -15,7 +15,12 @@ import java.util.UUID;
 public class ParticipanteRaidController {
 
     private final ParticipanteRaidService participanteRaidService;
-
+    @GetMapping("/raid/{raidID}")
+    public ResponseEntity<?> listarPorRaid(@PathVariable UUID raidID) {
+        return ResponseEntity.ok(
+                participanteRaidService.listarPorRaid(raidID)
+        );
+    }
     @PostMapping
     public ResponseEntity<ParticipanteRaid> inscrever(
             @RequestParam UUID raidId,
