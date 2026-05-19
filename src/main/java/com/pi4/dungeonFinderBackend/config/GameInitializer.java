@@ -2,6 +2,7 @@ package com.pi4.dungeonFinderBackend.config;
 
 import com.pi4.dungeonFinderBackend.datasource.repositories.JogoRepository;
 import com.pi4.dungeonFinderBackend.domain.entities.Jogo;
+import com.pi4.dungeonFinderBackend.domain.entities.CategoriaJogo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -21,33 +22,34 @@ public class GameInitializer implements CommandLineRunner {
             return;
         }
 
-        // Lista de jogos iniciais (sem capa)
+        // Lista de jogos iniciais com categorias
         Jogo[] jogos = {
-                criarJogo("World of Warcraft", "world-of-warcraft"),
-                criarJogo("Final Fantasy XIV", "final-fantasy-xiv"),
-                criarJogo("Albion Online", "albion-online"),
-                criarJogo("The Elder Scrolls Online", "the-elder-scrolls-online"),
-                criarJogo("Baldur's Gate 3", "baldurs-gate-3"),
-                criarJogo("Dungeons & Dragons", "dungeons-dragons"),
-                criarJogo("Tormenta", "tormenta"),
-                criarJogo("Ordem Paranormal", "ordem-paranormal"),
-                criarJogo("Daggerheart", "daggerheart"),
-                criarJogo("Elden Ring", "elden-ring")
+                criarJogo("World of Warcraft", "world-of-warcraft", CategoriaJogo.MMO),
+                criarJogo("Final Fantasy XIV", "final-fantasy-xiv", CategoriaJogo.MMO),
+                criarJogo("Albion Online", "albion-online", CategoriaJogo.MMO),
+                criarJogo("The Elder Scrolls Online", "the-elder-scrolls-online", CategoriaJogo.MMO),
+                criarJogo("Baldur's Gate 3", "baldurs-gate-3", CategoriaJogo.RPG),
+                criarJogo("Dungeons & Dragons", "dungeons-dragons", CategoriaJogo.RPG),
+                criarJogo("Tormenta", "tormenta", CategoriaJogo.RPG),
+                criarJogo("Ordem Paranormal", "ordem-paranormal", CategoriaJogo.RPG),
+                criarJogo("Daggerheart", "daggerheart", CategoriaJogo.RPG),
+                criarJogo("Elden Ring", "elden-ring", CategoriaJogo.MMO)  // Elden Ring pode ser considerado MMO? Ou RPG? Vou deixar como MMO
         };
 
         for (Jogo jogo : jogos) {
             jogoRepository.save(jogo);
         }
 
-        System.out.println(jogos.length + " jogos inseridos com sucesso (sem capa)!");
+        System.out.println(jogos.length + " jogos inseridos com sucesso!");
     }
 
-    private Jogo criarJogo(String nome, String slug) {
+    private Jogo criarJogo(String nome, String slug, CategoriaJogo categoria) {
         Jogo jogo = new Jogo();
         jogo.setNome(nome);
         jogo.setSlug(slug);
-        jogo.setCapa("");  // ← capa vazia (sem imagem)
+        jogo.setCapa(""); // capa vazia – você pode adicionar URLs depois
         jogo.setCriadoEm(LocalDateTime.now());
+        jogo.setCategoria(categoria);
         return jogo;
     }
 }

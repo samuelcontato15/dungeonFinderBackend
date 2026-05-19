@@ -37,15 +37,10 @@ public class RaidService {
     }
 
     public Raid criar(Raid raid, UUID jogoId, UUID usuarioId) {
-        if (raidRepository.existsByNome(raid.getNome()))
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Nome já cadastrado");
-
         Jogo jogo = jogoRepository.findById(jogoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jogo não encontrado"));
-
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-
         raid.setJogo(jogo);
         raid.setCriadoPor(usuario);
         raid.setCriadoEm(LocalDateTime.now());

@@ -1,5 +1,6 @@
 package com.pi4.dungeonFinderBackend.domain.entities;
 
+import com.pi4.dungeonFinderBackend.domain.entities.CategoriaJogo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,11 +25,13 @@ public class Jogo {
     @Column(name = "SLUG", length = 30, nullable = false)
     private String slug;
 
-    @Column(name = "CAPA", columnDefinition = "TEXT",nullable = false)
+    @Column(name = "CAPA", columnDefinition = "TEXT", nullable = false)
     private String capa;
 
     @Column(name = "CRIADO_EM", nullable = false)
     private LocalDateTime criadoEm;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "CATEGORIA", length = 20, nullable = false)
+    private CategoriaJogo categoria;
 }
-

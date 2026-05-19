@@ -6,6 +6,7 @@ import com.pi4.dungeonFinderBackend.datasource.repositories.UsuarioRepository;
 import com.pi4.dungeonFinderBackend.domain.entities.Jogo;
 import com.pi4.dungeonFinderBackend.domain.entities.JogoFavorito;
 import com.pi4.dungeonFinderBackend.domain.entities.Usuario;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class JogoFavoritoService {
         return jogoFavoritoRepository.findByUsuarioId(usuarioId);
     }
 
+    @Transactional
     public JogoFavorito adicionar(UUID usuarioId, UUID jogoId) {
         if (jogoFavoritoRepository.existsByUsuarioIdAndJogoId(usuarioId, jogoId))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Jogo já está nos favoritos");

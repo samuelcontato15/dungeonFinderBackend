@@ -4,6 +4,7 @@ import com.pi4.dungeonFinderBackend.datasource.repositories.JogoRepository;
 import com.pi4.dungeonFinderBackend.datasource.repositories.UsuarioRepository;
 import com.pi4.dungeonFinderBackend.domain.entities.Jogo;
 import com.pi4.dungeonFinderBackend.domain.entities.Usuario;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -42,14 +43,14 @@ public class JogoService {
         return jogoRepository.save(jogo);
     }
 
+    @Transactional
     public Jogo atualizar(UUID id, Jogo dadosNovos, UUID usuarioId) {
         verificarAdmin(usuarioId);
-
         Jogo jogo = buscarPorId(id);
         jogo.setNome(dadosNovos.getNome());
         jogo.setSlug(dadosNovos.getSlug());
         jogo.setCapa(dadosNovos.getCapa());
-
+        jogo.setCategoria(dadosNovos.getCategoria());
         return jogoRepository.save(jogo);
     }
 

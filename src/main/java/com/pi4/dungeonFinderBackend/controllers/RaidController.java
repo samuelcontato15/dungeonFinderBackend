@@ -2,6 +2,7 @@ package com.pi4.dungeonFinderBackend.controllers;
 
 
 import com.pi4.dungeonFinderBackend.domain.entities.Raid;
+import com.pi4.dungeonFinderBackend.dto.RaidRequest;
 import com.pi4.dungeonFinderBackend.services.RaidService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,10 +36,17 @@ public class RaidController {
 
     @PostMapping
     public ResponseEntity<Raid> criar(
-            @RequestBody Raid raid,
+            @RequestBody RaidRequest request,
             @RequestParam UUID jogoId,
             @RequestHeader("X-Usuario-Id") UUID usuarioId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(raidService.criar(raid, jogoId, usuarioId));
+        Raid raid = new Raid();
+        raid.setNome(request.nome());
+        raid.setDescricao(request.descricao());
+        raid.setMinJogadores(request.minJogadores());
+        raid.setMaxJogadores(request.maxJogadores());
+        raid.setInicioEm(request.inicioEm());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(raidService.criar(raid, jogoId, usuarioId));
     }
 
     @DeleteMapping("/{id}")

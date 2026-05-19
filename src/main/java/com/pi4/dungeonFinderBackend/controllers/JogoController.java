@@ -1,6 +1,8 @@
 package com.pi4.dungeonFinderBackend.controllers;
 
+import com.pi4.dungeonFinderBackend.domain.entities.CategoriaJogo;
 import com.pi4.dungeonFinderBackend.domain.entities.Jogo;
+import com.pi4.dungeonFinderBackend.dto.JogoRequest;
 import com.pi4.dungeonFinderBackend.services.JogoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,8 +39,15 @@ public class JogoController {
     @PutMapping("/{id}")
     public ResponseEntity<Jogo> atualizar(
             @PathVariable UUID id,
-            @RequestBody Jogo jogo,
+            @RequestBody JogoRequest request,
             @RequestHeader("X-Usuario-Id") UUID usuarioId) {
+
+        Jogo jogo = jogoService.buscarPorId(id);
+        jogo.setNome(request.nome());
+        jogo.setSlug(request.slug());
+        jogo.setCapa(request.capa());
+        jogo.setCategoria(CategoriaJogo.valueOf(request.categoria()));
+
         return ResponseEntity.ok(jogoService.atualizar(id, jogo, usuarioId));
     }
 
