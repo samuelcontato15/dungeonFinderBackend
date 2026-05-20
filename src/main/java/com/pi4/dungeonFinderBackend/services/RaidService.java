@@ -114,17 +114,19 @@ public class RaidService {
         return salva;
     }
 
+    @Transactional
     public void deletar(UUID id, UUID usuarioId) {
 
         Raid raid = buscarPorId(id);
 
         if (!raid.getCriadoPor().getId().equals(usuarioId)) {
-
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Apenas o criador pode deletar esta raid"
             );
         }
+
+        participanteRaidService.removerTodosDaRaid(id);
 
         raidRepository.deleteById(id);
     }

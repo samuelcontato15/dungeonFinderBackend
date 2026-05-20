@@ -19,4 +19,6 @@ public interface ParticipanteRaidRepository extends JpaRepository<ParticipanteRa
 
     // Conta quantos participantes estão inscritos em uma raid
     long countByRaidId(UUID raidId);
+
+    void deleteByRaidId(UUID raidId);
 }

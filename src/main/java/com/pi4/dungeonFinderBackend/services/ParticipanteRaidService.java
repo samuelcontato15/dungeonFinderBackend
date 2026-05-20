@@ -103,4 +103,9 @@ public class ParticipanteRaidService {
 
         participanteRaidRepository.deleteById(id);
     }
+
+    @Transactional
+    public void removerTodosDaRaid(UUID raidId) {
+        participanteRaidRepository.deleteByRaidId(raidId);
+    }
 }
