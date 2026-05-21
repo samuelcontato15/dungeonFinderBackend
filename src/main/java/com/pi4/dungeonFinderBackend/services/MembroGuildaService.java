@@ -23,11 +23,11 @@ public class MembroGuildaService {
     private final GuildaRepository guildaRepository;
     private final UsuarioRepository usuarioRepository;
     private final AmizadeRepository amizadeRepository;
+    private final NotificacaoService notificacaoService;
 
     public List<MembroGuilda> listarMembros(UUID guildaId) {
         return membroGuildaRepository.findByGuildaId(guildaId);
     }
-
 
     public List<MembroGuilda> listarAmigosNaGuilda(UUID guildaId, UUID usuarioId) {
         List<Amizade> amizades = amizadeRepository.findBySolicitanteIdOrDestinatarioId(usuarioId, usuarioId);
@@ -65,6 +65,55 @@ public class MembroGuildaService {
         membro.setEntrouEm(LocalDateTime.now());
 
         return membroGuildaRepository.save(membro);
+    }
+
+    // Admin convida um usuário para a guilda → envia notificação CONVITE_GUILDA para o usuário
+    public void convidar(UUID guildaId, UUID destinatarioId, UUID adminId) {
+        verificarPermissaoEdicao(guildaId, adminId);
+
+        Guilda guilda = guildaRepository.findById(guildaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Guilda não encontrada"));
+
+        Usuario admin = usuarioRepository.findById(adminId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        if (membroGuildaRepository.existsByGuildaIdAndUsuarioId(guildaId, destinatarioId))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Usuário já é membro desta guilda");
+
+        notificacaoService.criar(
+                destinatarioId,
+                TipoNotificacao.CONVITE_GUILDA,
+                admin.getNick() + " convidou você para a guilda: " + guilda.getNome(),
+                guildaId,
+                "GUILDA"
+        );
+    }
+
+    // Usuário solicita entrada → envia notificação PEDIDO_ENTRAR_GUILDA para o líder
+    public void solicitarEntrada(UUID guildaId, UUID usuarioId) {
+        Guilda guilda = guildaRepository.findById(guildaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Guilda não encontrada"));
+
+        if (membroGuildaRepository.existsByGuildaIdAndUsuarioId(guildaId, usuarioId))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Você já é membro desta guilda");
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        // Notifica o líder (criadoPor)
+        notificacaoService.criar(
+                guilda.getCriadoPor().getId(),
+                TipoNotificacao.PEDIDO_ENTRAR_GUILDA,
+                usuario.getNick() + " quer entrar na guilda: " + guilda.getNome(),
+                usuarioId,       // referenciaId = ID do usuário que pediu
+                guildaId.toString() // referenciaTipo = ID da guilda (string)
+        );
+    }
+
+    // Líder aprova entrada do usuário após receber PEDIDO_ENTRAR_GUILDA
+    public MembroGuilda aprovar(UUID guildaId, UUID usuarioId, UUID adminId) {
+        verificarPermissaoEdicao(guildaId, adminId);
+        return entrar(guildaId, usuarioId);
     }
 
     public MembroGuilda alterarPapel(UUID guildaId, UUID alvoId, PapelGuilda novoPapel, UUID usuarioId) {
