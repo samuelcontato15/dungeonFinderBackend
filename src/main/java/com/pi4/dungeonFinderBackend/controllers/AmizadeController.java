@@ -35,6 +35,11 @@ public class AmizadeController {
         return ResponseEntity.ok(amizadeService.listarPendentes(usuarioId));
     }
 
+    @GetMapping("/usuario/{usuarioId}/enviadas")
+    public ResponseEntity<List<Amizade>> listarEnviadas(@PathVariable UUID usuarioId) {
+        return ResponseEntity.ok(amizadeService.listarEnviadas(usuarioId));
+    }
+
     @PostMapping
     public ResponseEntity<Amizade> solicitar(
             @RequestHeader("X-Usuario-Id") UUID solicitanteId,
@@ -61,4 +66,6 @@ public class AmizadeController {
     ) {
         return ResponseEntity.ok(amizadeService.responder(amizadeId, status, usuarioId));
     }
+
+
 }
