@@ -12,7 +12,7 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    private final String SECRET = "dungeon-finder-chave-secreta-2024";
+    private final String SECRET = "dungeon-finder-chave-secreta-super-segura-2026-com-mais-de-32-bytes";
 
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
 

@@ -1,9 +1,9 @@
 package com.pi4.dungeonFinderBackend.services;
 
-import com.pi4.dungeonFinderBackend.datasource.repositories.EventoRepository;
-import com.pi4.dungeonFinderBackend.datasource.repositories.JogoRepository;
-import com.pi4.dungeonFinderBackend.datasource.repositories.UsuarioRepository;
+import com.pi4.dungeonFinderBackend.datasource.repositories.*;
+
 import com.pi4.dungeonFinderBackend.domain.entities.Evento;
+import com.pi4.dungeonFinderBackend.domain.entities.Guilda;
 import com.pi4.dungeonFinderBackend.domain.entities.Jogo;
 import com.pi4.dungeonFinderBackend.domain.entities.Usuario;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,10 @@ public class EventoService {
 
     private final EventoRepository eventoRepository;
     private final JogoRepository jogoRepository;
+    private final GuildaRepository guildaRepository;      // 👈 adicionar
     private final UsuarioRepository usuarioRepository;
+    private final JogoFavoritoRepository jogoFavoritoRepository;
+    private final NotificacaoService notificacaoService;
 
     public List<Evento> listarTodos() {
         return eventoRepository.findAll();
@@ -36,7 +39,7 @@ public class EventoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento não encontrado"));
     }
 
-    public Evento criar(Evento evento, UUID jogoId, UUID usuarioId) {
+    public Evento criar(Evento evento, UUID jogoId, UUID guildaId, UUID usuarioId) {
         verificarAdmin(usuarioId);
 
         if (eventoRepository.existsByNome(evento.getNome()))
@@ -45,9 +48,23 @@ public class EventoService {
         Jogo jogo = jogoRepository.findById(jogoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jogo não encontrado"));
 
+        Guilda guilda = guildaRepository.findById(guildaId)   // 👈 adicionar
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Guilda não encontrada"));
+
         evento.setJogo(jogo);
+        evento.setGuilda(guilda);                              // 👈 adicionar
         evento.setCriadoEm(LocalDateTime.now());
-        return eventoRepository.save(evento);
+        Evento salvo = eventoRepository.save(evento);
+
+        // 🔔 Notificar todos que favoritaram o jogo
+        List<Usuario> membros = jogoFavoritoRepository.findByJogoId(jogoId)
+                .stream()
+                .map(fav -> fav.getUsuario())
+                .toList();
+
+        notificacaoService.notificarSobreEvento(membros, salvo);
+
+        return salvo;
     }
 
     public Evento atualizar(UUID id, Evento dadosNovos, UUID usuarioId) {

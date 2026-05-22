@@ -10,5 +10,8 @@ import java.util.UUID;
 @Repository
 public interface NotificacaoRepository extends JpaRepository<Notificacao, UUID> {
     List<Notificacao> findByUsuarioIdOrderByCriadoEmDesc(UUID usuarioId);
+    long countByUsuarioIdAndLidaFalse(UUID usuarioId);
     List<Notificacao> findByUsuarioIdAndLida(UUID usuarioId, Boolean lida);
+
+    List<Notificacao> findByUsuarioIdAndLidaFalseOrderByCriadoEmDesc(UUID usuarioId);
 }

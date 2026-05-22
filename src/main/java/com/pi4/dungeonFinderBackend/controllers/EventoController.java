@@ -36,8 +36,9 @@ public class EventoController {
     public ResponseEntity<Evento> criar(
             @RequestBody Evento evento,
             @RequestParam UUID jogoId,
+            @RequestParam UUID guildaId,
             @RequestHeader("X-Usuario-Id") UUID usuarioId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(eventoService.criar(evento, jogoId, usuarioId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(eventoService.criar(evento, jogoId,   guildaId, usuarioId));
     }
 
     @PutMapping("/{id}")

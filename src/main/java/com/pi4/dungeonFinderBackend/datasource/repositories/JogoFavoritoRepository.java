@@ -16,4 +16,5 @@ public interface JogoFavoritoRepository extends JpaRepository<JogoFavorito, Jogo
 
     @Query("SELECT COUNT(jf) > 0 FROM JogoFavorito jf WHERE jf.id.usuarioId = :usuarioId AND jf.id.jogoId = :jogoId")
     boolean existsByUsuarioIdAndJogoId(@Param("usuarioId") UUID usuarioId, @Param("jogoId") UUID jogoId);
+    List<JogoFavorito> findByJogoId(UUID jogoId);
 }

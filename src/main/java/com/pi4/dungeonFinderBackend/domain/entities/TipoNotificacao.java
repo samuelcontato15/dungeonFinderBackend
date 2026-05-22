@@ -9,5 +9,8 @@ public enum TipoNotificacao {
     AMIGO_ENTROU_GUILDA,
     RAID_INICIANDO,
     CONVITE_GUILDA,
-    PEDIDO_ENTRAR_GUILDA
+    PEDIDO_ENTRAR_GUILDA,
+    EVENTO,
+    JOGO,
+    SISTEMA
 }

@@ -2,6 +2,7 @@ package com.pi4.dungeonFinderBackend.services;
 
 import com.pi4.dungeonFinderBackend.datasource.repositories.NotificacaoRepository;
 import com.pi4.dungeonFinderBackend.datasource.repositories.UsuarioRepository;
+import com.pi4.dungeonFinderBackend.domain.entities.Evento;
 import com.pi4.dungeonFinderBackend.domain.entities.Notificacao;
 import com.pi4.dungeonFinderBackend.domain.entities.TipoNotificacao;
 import com.pi4.dungeonFinderBackend.domain.entities.Usuario;
@@ -21,48 +22,170 @@ public class NotificacaoService {
     private final NotificacaoRepository notificacaoRepository;
     private final UsuarioRepository usuarioRepository;
 
-    public List<Notificacao> listarPorUsuario(UUID usuarioId) {
-        return notificacaoRepository.findByUsuarioIdOrderByCriadoEmDesc(usuarioId);
+    // =========================
+    // EVENTOS
+    // =========================
+
+    public void notificarSobreEvento(List<Usuario> usuarios, Evento evento) {
+
+        List<Notificacao> notificacoes = usuarios.stream()
+                .map(usuario -> {
+
+                    Notificacao notificacao = new Notificacao();
+
+                    notificacao.setUsuario(usuario);
+                    notificacao.setTipo(TipoNotificacao.EVENTO);
+                    notificacao.setMensagem(
+                            "Novo evento em "
+                                    + evento.getJogo().getNome()
+                                    + ": "
+                                    + evento.getNome()
+                    );
+
+                    notificacao.setLida(false);
+                    notificacao.setReferenciaId(evento.getId());
+                    notificacao.setReferenciaTipo("EVENTO");
+                    notificacao.setCriadoEm(LocalDateTime.now());
+
+                    return notificacao;
+                })
+                .toList();
+
+        notificacaoRepository.saveAll(notificacoes);
     }
 
-    public List<Notificacao> listarNaoLidas(UUID usuarioId) {
-        return notificacaoRepository.findByUsuarioIdAndLida(usuarioId, false);
-    }
+    // =========================
+    // CRIAR
+    // =========================
 
-    public Notificacao marcarComoLida(UUID notificacaoId, UUID usuarioId) {
-        Notificacao notificacao = buscarPorId(notificacaoId, usuarioId);
-        notificacao.setLida(true);
-        return notificacaoRepository.save(notificacao);
-    }
+    public Notificacao criar(
+            UUID usuarioId,
+            TipoNotificacao tipo,
+            String mensagem,
+            UUID referenciaId,
+            String referenciaTipo
+    ) {
 
-    public void deletar(UUID notificacaoId, UUID usuarioId) {
-        buscarPorId(notificacaoId, usuarioId);
-        notificacaoRepository.deleteById(notificacaoId);
-    }
-
-    public void criar(UUID usuarioId, TipoNotificacao tipo, String mensagem, UUID referenciaId, String referenciaTipo) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Usuário não encontrado"
+                        ));
 
         Notificacao notificacao = new Notificacao();
+
         notificacao.setUsuario(usuario);
         notificacao.setTipo(tipo);
         notificacao.setMensagem(mensagem);
-        notificacao.setLida(false);
         notificacao.setReferenciaId(referenciaId);
         notificacao.setReferenciaTipo(referenciaTipo);
         notificacao.setCriadoEm(LocalDateTime.now());
+        notificacao.setLida(false);
 
-        notificacaoRepository.save(notificacao);
+        return notificacaoRepository.save(notificacao);
     }
 
-    private Notificacao buscarPorId(UUID notificacaoId, UUID usuarioId) {
-        Notificacao notificacao = notificacaoRepository.findById(notificacaoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notificação não encontrada"));
+    // =========================
+    // LISTAR TODAS
+    // =========================
 
-        if (!notificacao.getUsuario().getId().equals(usuarioId))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
+    public List<Notificacao> listarPorUsuario(UUID usuarioId) {
 
-        return notificacao;
+        return notificacaoRepository
+                .findByUsuarioIdOrderByCriadoEmDesc(usuarioId);
+    }
+
+    // =========================
+    // LISTAR NÃO LIDAS
+    // =========================
+
+    public List<Notificacao> listarNaoLidas(UUID usuarioId) {
+
+        return notificacaoRepository
+                .findByUsuarioIdAndLidaFalseOrderByCriadoEmDesc(usuarioId);
+    }
+
+    // =========================
+    // CONTAR NÃO LIDAS
+    // =========================
+
+    public long contarNaoLidas(UUID usuarioId) {
+
+        return notificacaoRepository
+                .countByUsuarioIdAndLidaFalse(usuarioId);
+    }
+
+    // =========================
+    // MARCAR COMO LIDA
+    // =========================
+
+    public Notificacao marcarComoLida(
+            UUID notificacaoId,
+            UUID usuarioId
+    ) {
+
+        Notificacao notificacao = notificacaoRepository
+                .findById(notificacaoId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Notificação não encontrada"
+                        ));
+
+        if (!notificacao.getUsuario().getId().equals(usuarioId)) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso negado"
+            );
+        }
+
+        notificacao.setLida(true);
+
+        return notificacaoRepository.save(notificacao);
+    }
+
+    // =========================
+    // MARCAR TODAS COMO LIDAS
+    // =========================
+
+    public void marcarTodasComoLidas(UUID usuarioId) {
+
+        List<Notificacao> notificacoes =
+                notificacaoRepository
+                        .findByUsuarioIdAndLidaFalseOrderByCriadoEmDesc(usuarioId);
+
+        notificacoes.forEach(n -> n.setLida(true));
+
+        notificacaoRepository.saveAll(notificacoes);
+    }
+
+    // =========================
+    // DELETAR
+    // =========================
+
+    public void deletar(
+            UUID notificacaoId,
+            UUID usuarioId
+    ) {
+
+        Notificacao notificacao = notificacaoRepository
+                .findById(notificacaoId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Notificação não encontrada"
+                        ));
+
+        if (!notificacao.getUsuario().getId().equals(usuarioId)) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso negado"
+            );
+        }
+
+        notificacaoRepository.delete(notificacao);
     }
 }
