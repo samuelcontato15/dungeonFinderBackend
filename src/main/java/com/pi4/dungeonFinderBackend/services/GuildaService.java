@@ -49,9 +49,18 @@ public class GuildaService {
         guilda.setCriadoPor(usuario);
         guilda.setJogo(jogo);
         guilda.setCriadoEm(LocalDateTime.now());
-        return guildaRepository.save(guilda);
-    }
 
+        Guilda guildaSalva = guildaRepository.save(guilda);
+
+        MembroGuilda lider = new MembroGuilda();
+        lider.setGuilda(guildaSalva);
+        lider.setUsuario(usuario);
+        lider.setPapel(PapelGuilda.LIDER);
+        lider.setEntrouEm(LocalDateTime.now());
+        membroGuildaRepository.save(lider);
+
+        return guildaSalva;
+    }
     public Guilda atualizar(UUID id, Guilda dadosNovos, UUID usuarioId) {
         Guilda guilda = buscarPorId(id);
         verificarPermissaoEdicao(guilda.getId(), usuarioId);
@@ -82,6 +91,13 @@ public class GuildaService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas o líder ou admin pode deletar a guilda");
 
         guildaRepository.deleteById(id);
+    }
+
+    public List<Guilda> listarPorUsuario(UUID usuarioId) {
+        return membroGuildaRepository.findByUsuarioId(usuarioId)
+                .stream()
+                .map(MembroGuilda::getGuilda)
+                .toList();
     }
 
 
