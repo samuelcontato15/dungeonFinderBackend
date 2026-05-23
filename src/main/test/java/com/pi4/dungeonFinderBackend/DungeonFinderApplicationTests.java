@@ -8,6 +8,6 @@ class DungeonFinderApplicationTests {
 
 	@Test
 	void contextLoads() {
-	}
 
+	}
 }
