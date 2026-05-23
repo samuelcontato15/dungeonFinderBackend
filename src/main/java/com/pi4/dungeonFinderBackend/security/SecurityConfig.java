@@ -45,7 +45,12 @@ public class SecurityConfig {
                                 "/auth/**",
                                 "/console/**",
                                 "/jogos/**",
-                                "/jogos_favoritos/**"
+                                 "/eventos/**",
+                                 "/raids/**",
+                                "/guildas/**",
+                             "/participantes/**",
+                          "/jogos_favoritos/**"
+
                         ).permitAll()
 
                         .anyRequest().authenticated()
