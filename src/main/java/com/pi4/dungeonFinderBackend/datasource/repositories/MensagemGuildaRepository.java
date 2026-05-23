@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface MensagemGuildaRepository extends JpaRepository<MensagemGuilda, UUID> {
     List<MensagemGuilda> findByGuildaIdOrderByEnviadoEmAsc(UUID guildaId);
+    List<MensagemGuilda> findByGuildaId(UUID guildaId);
 }

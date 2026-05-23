@@ -1,9 +1,6 @@
 package com.pi4.dungeonFinderBackend.services;
 
-import com.pi4.dungeonFinderBackend.datasource.repositories.GuildaRepository;
-import com.pi4.dungeonFinderBackend.datasource.repositories.JogoRepository;
-import com.pi4.dungeonFinderBackend.datasource.repositories.MembroGuildaRepository;
-import com.pi4.dungeonFinderBackend.datasource.repositories.UsuarioRepository;
+import com.pi4.dungeonFinderBackend.datasource.repositories.*;
 import com.pi4.dungeonFinderBackend.domain.entities.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +19,7 @@ public class GuildaService {
     private final JogoRepository jogoRepository;
     private final UsuarioRepository usuarioRepository;
     private final MembroGuildaRepository membroGuildaRepository;
+    private final MensagemGuildaRepository mensagemGuildaRepository;
 
     public List<Guilda> listarTodas() {
         return guildaRepository.findAll();
@@ -88,6 +86,9 @@ public class GuildaService {
         if (!isLider && !isAdminGeral)
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas o líder ou admin pode deletar a guilda");
 
+        mensagemGuildaRepository.deleteAll(mensagemGuildaRepository.findByGuildaId(id));
+        membroGuildaRepository.deleteAll(membroGuildaRepository.findByGuildaId(id));
+
         guildaRepository.deleteById(id);
     }
 
@@ -103,5 +104,9 @@ public class GuildaService {
 
         if (membro.getPapel() == PapelGuilda.MEMBRO)
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas líder ou oficial podem fazer isso");
+    }
+
+    public List<Guilda> listarPorUsuario(UUID usuarioId) {
+        return List.of();
     }
 }
