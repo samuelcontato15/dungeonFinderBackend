@@ -32,6 +32,11 @@ public class GuildaController {
         return ResponseEntity.ok(guildaService.buscarPorId(id));
     }
 
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<Guilda>> listarPorUsuario(@PathVariable UUID usuarioId) {
+        return ResponseEntity.ok(guildaService.listarPorUsuario(usuarioId));
+    }
+
     @PostMapping
     public ResponseEntity<Guilda> criar(
             @RequestBody Guilda guilda,

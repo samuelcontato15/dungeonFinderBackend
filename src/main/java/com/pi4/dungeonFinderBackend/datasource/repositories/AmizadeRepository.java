@@ -31,4 +31,7 @@ public interface AmizadeRepository extends JpaRepository<Amizade, UUID> {
     );
     @Query("SELECT a FROM Amizade a JOIN FETCH a.solicitante JOIN FETCH a.destinatario WHERE a.id = :id")
     Optional<Amizade> findByIdWithUsuarios(@Param("id") UUID id);
+
+
+    List<Amizade> findByStatusAndSolicitanteId(StatusAmizade status, UUID solicitanteId);
 }

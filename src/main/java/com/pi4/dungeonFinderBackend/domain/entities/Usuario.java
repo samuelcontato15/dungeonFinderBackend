@@ -18,7 +18,7 @@ public class Usuario {
     @Column(name = "ID")
     private UUID id;
 
-    @Column(name = "NICK", length = 12, nullable = false)
+    @Column(name = "NICK", length = 15, nullable = false)
     private String nick;
 
     @Column(name = "EMAIL", length = 30, nullable = false)

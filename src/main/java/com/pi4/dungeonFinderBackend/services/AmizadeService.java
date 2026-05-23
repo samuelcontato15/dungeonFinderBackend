@@ -106,5 +106,9 @@ public class AmizadeService {
         return amizadeRepository.findByIdWithUsuarios(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Amizade não encontrada"));
     }
+
+    public List<Amizade> listarEnviadas(UUID usuarioId) {
+        return amizadeRepository.findByStatusAndSolicitanteId(StatusAmizade.PENDENTE, usuarioId);
+    }
 }
 

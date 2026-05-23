@@ -1,5 +1,6 @@
 package com.pi4.dungeonFinderBackend.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class MembroGuilda {
     @Column(name = "ID")
     private UUID id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "GUILDA_ID", nullable = false)
     private Guilda guilda;

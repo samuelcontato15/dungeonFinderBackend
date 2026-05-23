@@ -14,4 +14,5 @@ public interface MembroGuildaRepository extends JpaRepository<MembroGuilda, UUID
     Optional<MembroGuilda> findByGuildaIdAndUsuarioId(UUID guildaId, UUID usuarioId);
     List<MembroGuilda> findByGuildaId(UUID guildaId);
     boolean existsByGuildaIdAndUsuarioId(UUID guildaId, UUID usuarioId);
+    List<MembroGuilda> findByUsuarioId(UUID usuarioId);
 }
