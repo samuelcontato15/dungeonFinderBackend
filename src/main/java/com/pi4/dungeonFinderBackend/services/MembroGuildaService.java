@@ -67,7 +67,6 @@ public class MembroGuildaService {
         return membroGuildaRepository.save(membro);
     }
 
-    // Admin convida um usuário para a guilda → envia notificação CONVITE_GUILDA para o usuário
     public void convidar(UUID guildaId, UUID destinatarioId, UUID adminId) {
         verificarPermissaoEdicao(guildaId, adminId);
 
@@ -89,7 +88,6 @@ public class MembroGuildaService {
         );
     }
 
-    // Usuário solicita entrada → envia notificação PEDIDO_ENTRAR_GUILDA para o líder
     public void solicitarEntrada(UUID guildaId, UUID usuarioId) {
         Guilda guilda = guildaRepository.findById(guildaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Guilda não encontrada"));
@@ -100,17 +98,15 @@ public class MembroGuildaService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        // Notifica o líder (criadoPor)
         notificacaoService.criar(
                 guilda.getCriadoPor().getId(),
                 TipoNotificacao.PEDIDO_ENTRAR_GUILDA,
                 usuario.getNick() + " quer entrar na guilda: " + guilda.getNome(),
-                usuarioId,       // referenciaId = ID do usuário que pediu
-                guildaId.toString() // referenciaTipo = ID da guilda (string)
+                usuarioId,
+                guildaId.toString()
         );
     }
 
-    // Líder aprova entrada do usuário após receber PEDIDO_ENTRAR_GUILDA
     public MembroGuilda aprovar(UUID guildaId, UUID usuarioId, UUID adminId) {
         verificarPermissaoEdicao(guildaId, adminId);
         return entrar(guildaId, usuarioId);

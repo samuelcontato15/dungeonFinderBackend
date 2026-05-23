@@ -49,6 +49,14 @@ public class GuildaService {
         guilda.setCriadoPor(usuario);
         guilda.setJogo(jogo);
         guilda.setCriadoEm(LocalDateTime.now());
+        Guilda guildaSalva = guildaRepository.save(guilda);
+
+        MembroGuilda lider = new MembroGuilda();
+        lider.setGuilda(guildaSalva);
+        lider.setUsuario(usuario);
+        lider.setPapel(PapelGuilda.LIDER);
+        lider.setEntrouEm(LocalDateTime.now());
+        membroGuildaRepository.save(lider);
         return guildaRepository.save(guilda);
     }
 
@@ -74,7 +82,6 @@ public class GuildaService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        // apenas LIDER da guilda ou admin geral podem deletar
         boolean isLider = guilda.getCriadoPor().getId().equals(usuarioId);
         boolean isAdminGeral = usuario.getIsAdmin();
 

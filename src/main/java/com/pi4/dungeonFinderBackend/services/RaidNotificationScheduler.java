@@ -20,7 +20,6 @@ public class RaidNotificationScheduler {
     private final ParticipanteRaidRepository participanteRaidRepository;
     private final NotificacaoService notificacaoService;
 
-    // executa a cada 1 minuto
     @Scheduled(fixedRate = 60000)
     public void verificarRaids() {
 
@@ -33,20 +32,14 @@ public class RaidNotificationScheduler {
 
         for (Raid raid : raids) {
 
-            // ignora raids sem data
             if (raid.getInicioEm() == null) {
                 continue;
             }
 
-            // evita enviar repetidamente
             if (Boolean.TRUE.equals(raid.getNotificacaoEnviada())) {
                 continue;
             }
 
-            /*
-             verifica se a raid começa
-             dentro do próximo minuto
-            */
             boolean vaiComecar =
                     raid.getInicioEm().isAfter(agora)
                             && raid.getInicioEm().isBefore(proximoMinuto);
@@ -75,7 +68,6 @@ public class RaidNotificationScheduler {
                     );
                 }
 
-                // marca como enviada
                 raid.setNotificacaoEnviada(true);
 
                 raidRepository.save(raid);

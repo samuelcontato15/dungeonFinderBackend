@@ -30,7 +30,6 @@ public class MembroGuildaController {
         return ResponseEntity.ok(membroGuildaService.listarAmigosNaGuilda(guildaId, usuarioId));
     }
 
-    // Usuário entra direto na guilda (usado após aceitar convite via notificação)
     @PostMapping("/entrar")
     public ResponseEntity<MembroGuilda> entrar(
             @PathVariable UUID guildaId,
@@ -38,7 +37,6 @@ public class MembroGuildaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(membroGuildaService.entrar(guildaId, usuarioId));
     }
 
-    // Admin/líder convida usuário → gera notificação CONVITE_GUILDA para o usuário
     @PostMapping("/{destinatarioId}/convidar")
     public ResponseEntity<Void> convidar(
             @PathVariable UUID guildaId,
@@ -48,7 +46,6 @@ public class MembroGuildaController {
         return ResponseEntity.ok().build();
     }
 
-    // Usuário solicita entrada → gera notificação PEDIDO_ENTRAR_GUILDA para o líder
     @PostMapping("/solicitar-entrada")
     public ResponseEntity<Void> solicitarEntrada(
             @PathVariable UUID guildaId,
@@ -57,7 +54,6 @@ public class MembroGuildaController {
         return ResponseEntity.ok().build();
     }
 
-    // Líder aprova pedido de entrada (chamado ao aceitar PEDIDO_ENTRAR_GUILDA)
     @PostMapping("/{usuarioId}/aprovar")
     public ResponseEntity<MembroGuilda> aprovar(
             @PathVariable UUID guildaId,

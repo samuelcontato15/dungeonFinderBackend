@@ -22,7 +22,6 @@ public class GameInitializer implements CommandLineRunner {
             return;
         }
 
-        // Lista de jogos iniciais com categorias
         Jogo[] jogos = {
                 criarJogo("World of Warcraft", "world-of-warcraft", CategoriaJogo.MMO),
                 criarJogo("Final Fantasy XIV", "final-fantasy-xiv", CategoriaJogo.MMO),
@@ -47,7 +46,7 @@ public class GameInitializer implements CommandLineRunner {
         Jogo jogo = new Jogo();
         jogo.setNome(nome);
         jogo.setSlug(slug);
-        jogo.setCapa(""); // capa vazia – você pode adicionar URLs depois
+        jogo.setCapa("");
         jogo.setCriadoEm(LocalDateTime.now());
         jogo.setCategoria(categoria);
         return jogo;

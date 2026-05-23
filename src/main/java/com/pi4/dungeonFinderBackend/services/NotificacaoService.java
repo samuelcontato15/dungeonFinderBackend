@@ -22,10 +22,6 @@ public class NotificacaoService {
     private final NotificacaoRepository notificacaoRepository;
     private final UsuarioRepository usuarioRepository;
 
-    // =========================
-    // EVENTOS
-    // =========================
-
     public void notificarSobreEvento(List<Usuario> usuarios, Evento evento) {
 
         List<Notificacao> notificacoes = usuarios.stream()
@@ -53,10 +49,6 @@ public class NotificacaoService {
 
         notificacaoRepository.saveAll(notificacoes);
     }
-
-    // =========================
-    // CRIAR
-    // =========================
 
     public Notificacao criar(
             UUID usuarioId,
@@ -86,19 +78,11 @@ public class NotificacaoService {
         return notificacaoRepository.save(notificacao);
     }
 
-    // =========================
-    // LISTAR TODAS
-    // =========================
-
     public List<Notificacao> listarPorUsuario(UUID usuarioId) {
 
         return notificacaoRepository
                 .findByUsuarioIdOrderByCriadoEmDesc(usuarioId);
     }
-
-    // =========================
-    // LISTAR NÃO LIDAS
-    // =========================
 
     public List<Notificacao> listarNaoLidas(UUID usuarioId) {
 
@@ -106,19 +90,11 @@ public class NotificacaoService {
                 .findByUsuarioIdAndLidaFalseOrderByCriadoEmDesc(usuarioId);
     }
 
-    // =========================
-    // CONTAR NÃO LIDAS
-    // =========================
-
     public long contarNaoLidas(UUID usuarioId) {
 
         return notificacaoRepository
                 .countByUsuarioIdAndLidaFalse(usuarioId);
     }
-
-    // =========================
-    // MARCAR COMO LIDA
-    // =========================
 
     public Notificacao marcarComoLida(
             UUID notificacaoId,
@@ -146,10 +122,6 @@ public class NotificacaoService {
         return notificacaoRepository.save(notificacao);
     }
 
-    // =========================
-    // MARCAR TODAS COMO LIDAS
-    // =========================
-
     public void marcarTodasComoLidas(UUID usuarioId) {
 
         List<Notificacao> notificacoes =
@@ -160,10 +132,6 @@ public class NotificacaoService {
 
         notificacaoRepository.saveAll(notificacoes);
     }
-
-    // =========================
-    // DELETAR
-    // =========================
 
     public void deletar(
             UUID notificacaoId,

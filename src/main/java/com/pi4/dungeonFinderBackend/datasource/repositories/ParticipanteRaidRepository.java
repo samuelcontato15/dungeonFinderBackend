@@ -17,7 +17,6 @@ public interface ParticipanteRaidRepository extends JpaRepository<ParticipanteRa
 
     boolean existsByRaidIdAndUsuarioId(UUID raidId, UUID usuarioId);
 
-    // Conta quantos participantes estão inscritos em uma raid
     long countByRaidId(UUID raidId);
 
     void deleteByRaidId(UUID raidId);

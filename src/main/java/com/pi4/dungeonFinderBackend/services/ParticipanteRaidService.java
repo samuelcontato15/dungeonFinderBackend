@@ -36,20 +36,17 @@ public class ParticipanteRaidService {
         System.out.println("raidId: " + raidId);
         System.out.println("usuarioId: " + usuarioId);
 
-        // Verifica se já está inscrito
         if (participanteRaidRepository.existsByRaidIdAndUsuarioId(raidId, usuarioId)) {
             System.out.println("Usuário já inscrito");
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Usuário já inscrito nesta raid");
         }
 
-        // Busca a raid
         Raid raid = raidRepository.findById(raidId)
                 .orElseThrow(() -> {
                     System.out.println("Raid não encontrada");
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "Raid não encontrada");
                 });
 
-        // Verifica capacidade máxima
         long participantesAtuais = participanteRaidRepository.countByRaidId(raidId);
         System.out.println("Participantes atuais: " + participantesAtuais);
         System.out.println("Máximo permitido: " + raid.getMaxJogadores());
@@ -59,14 +56,12 @@ public class ParticipanteRaidService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Raid já está lotada");
         }
 
-        // Busca o usuário
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> {
                     System.out.println("Usuário não encontrado");
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
                 });
 
-        // Cria a inscrição
         ParticipanteRaid.ParticipanteRaidId id = new ParticipanteRaid.ParticipanteRaidId();
         id.setRaidId(raidId);
         id.setUsuarioId(usuarioId);

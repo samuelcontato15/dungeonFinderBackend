@@ -21,7 +21,7 @@ public class EventoService {
 
     private final EventoRepository eventoRepository;
     private final JogoRepository jogoRepository;
-    private final GuildaRepository guildaRepository;      // 👈 adicionar
+    private final GuildaRepository guildaRepository;
     private final UsuarioRepository usuarioRepository;
     private final JogoFavoritoRepository jogoFavoritoRepository;
     private final NotificacaoService notificacaoService;
@@ -48,15 +48,14 @@ public class EventoService {
         Jogo jogo = jogoRepository.findById(jogoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jogo não encontrado"));
 
-        Guilda guilda = guildaRepository.findById(guildaId)   // 👈 adicionar
+        Guilda guilda = guildaRepository.findById(guildaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Guilda não encontrada"));
 
         evento.setJogo(jogo);
-        evento.setGuilda(guilda);                              // 👈 adicionar
+        evento.setGuilda(guilda);
         evento.setCriadoEm(LocalDateTime.now());
         Evento salvo = eventoRepository.save(evento);
 
-        // 🔔 Notificar todos que favoritaram o jogo
         List<Usuario> membros = jogoFavoritoRepository.findByJogoId(jogoId)
                 .stream()
                 .map(fav -> fav.getUsuario())
